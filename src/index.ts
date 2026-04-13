@@ -4,9 +4,12 @@ import { cors } from "@elysiajs/cors";
 import { db } from "./db";
 import { users } from "./db/schema";
 
+import { usersRoute } from "./routes/users-route";
+
 const app = new Elysia()
   .use(swagger())
   .use(cors())
+  .use(usersRoute)
   .get("/", () => "Welcome to ElysiaJS with Bun and Drizzle!")
   .get("/ping", () => ({ status: "pong", timestamp: new Date().toISOString() }))
   .get("/users", async () => {
