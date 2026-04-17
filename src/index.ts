@@ -7,7 +7,28 @@ import { users } from "./db/schema";
 import { usersRoute } from "./routes/users-route";
 
 export const app = new Elysia()
-  .use(swagger())
+  .use(swagger({
+    documentation: {
+      info: {
+        title: "Belajar Vibe Coding - User API",
+        version: "1.0.0",
+        description: "API untuk mengelola registrasi, login, profil user, dan logout."
+      },
+      tags: [
+        { name: "Auth", description: "Endpoint untuk autentikasi (registrasi, login, logout)" },
+        { name: "User", description: "Endpoint untuk mengelola data user" }
+      ],
+      components: {
+        securitySchemes: {
+          BearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "UUID"
+          }
+        }
+      }
+    }
+  }))
   .use(cors())
   .use(usersRoute)
   .get("/", () => "Welcome to ElysiaJS with Bun and Drizzle!")
