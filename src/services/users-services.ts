@@ -4,6 +4,10 @@ import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export class UsersService {
+  /**
+   * Mendaftarkan user baru ke dalam database.
+   * Melakukan validasi email unik, hashing password, dan penyimpanan data.
+   */
   static async register(payload: any) {
     const { name, email, password } = payload;
 
@@ -27,6 +31,10 @@ export class UsersService {
     return { data: "OK" };
   }
 
+  /**
+   * Melakukan autentikasi user berdasarkan email dan password.
+   * Jika valid, akan membuatkan session token (UUID) baru yang disimpan di database.
+   */
   static async login(payload: any) {
     const { email, password } = payload;
 
@@ -53,6 +61,10 @@ export class UsersService {
     return { data: token };
   }
 
+  /**
+   * Mengambil data profil user yang sedang aktif berdasarkan token session.
+   * Menggunakan join antara tabel session dan users untuk mendapatkan data lengkap.
+   */
   static async getCurrentUser(token: string) {
     const result = await db
       .select({
@@ -74,6 +86,10 @@ export class UsersService {
     return { data: user };
   }
 
+  /**
+   * Menghapus session token dari database untuk proses logout.
+   * Menggunakan satu perintah DELETE untuk efisiensi (Idempotent).
+   */
   static async logout(token: string) {
     const [result]: any = await db.delete(session).where(eq(session.token, token));
 
