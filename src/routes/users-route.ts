@@ -20,7 +20,12 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
       name: t.String({ maxLength: 255 }),
       email: t.String({ format: "email", maxLength: 255 }),
       password: t.String({ maxLength: 255 })
-    })
+    }),
+    response: {
+      200: t.Object({ data: t.String() }, { description: "Registrasi berhasil", examples: [{ data: "OK" }] }),
+      400: t.Object({ error: t.String() }, { description: "Email sudah terdaftar", examples: [{ error: "email sudah terdaftar" }] }),
+      422: t.Object({ error: t.String() }, { description: "Validasi gagal" })
+    }
   })
   .post("/login", async ({ body, set }) => {
     try {
@@ -39,7 +44,12 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
     body: t.Object({
       email: t.String({ format: "email", maxLength: 255 }),
       password: t.String({ maxLength: 255 })
-    })
+    }),
+    response: {
+      200: t.Object({ data: t.String() }, { description: "Login berhasil, token dikembalikan", examples: [{ data: "550e8400-e29b-41d4-a716-446655440000" }] }),
+      400: t.Object({ error: t.String() }, { description: "Kredensial salah", examples: [{ error: "email atau password salah" }] }),
+      422: t.Object({ error: t.String() }, { description: "Validasi gagal" })
+    }
   })
   .derive(({ headers }) => {
     const auth = headers.authorization;
@@ -66,6 +76,10 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
       summary: "Get Current User",
       description: "Mengambil profil user yang sedang login berdasarkan Bearer Token.",
       security: [{ BearerAuth: [] }]
+    },
+    response: {
+      200: t.Object({ data: t.Object({ id: t.Number(), name: t.String(), email: t.String(), createdAt: t.Any() }) }, { description: "Data profil user", examples: [{ data: { id: 1, name: "Sanas Febriyan", email: "sanas@example.com", createdAt: "2026-04-17T07:00:00.000Z" } }] }),
+      401: t.Object({ error: t.String() }, { description: "Token tidak valid", examples: [{ error: "Unauthorized" }] })
     }
   })
   .delete("/logout", async ({ token, set }) => {
@@ -87,5 +101,9 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
       summary: "Logout User",
       description: "Menghapus sesi/token user dari database.",
       security: [{ BearerAuth: [] }]
+    },
+    response: {
+      200: t.Object({ data: t.String() }, { description: "Logout berhasil", examples: [{ data: "ok" }] }),
+      401: t.Object({ error: t.String() }, { description: "Token tidak valid", examples: [{ error: "Unauthorized" }] })
     }
   });
