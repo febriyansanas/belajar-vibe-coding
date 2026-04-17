@@ -73,4 +73,16 @@ export class UsersService {
 
     return { data: user };
   }
+
+  static async logout(token: string) {
+    const existingSession = await db.select().from(session).where(eq(session.token, token)).limit(1);
+
+    if (existingSession.length === 0) {
+      throw new Error("Unauthorized");
+    }
+
+    await db.delete(session).where(eq(session.token, token));
+
+    return { data: "ok" };
+  }
 }
