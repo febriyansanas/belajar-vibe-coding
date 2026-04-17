@@ -1,6 +1,5 @@
 import { Elysia, t } from "elysia";
 import { UsersService } from "../services/users-services";
-import { authPlugin } from "../middlewares/auth";
 
 export const usersRoute = new Elysia({ prefix: "/api/users" })
   .post("/", async ({ body, set }) => {
@@ -13,9 +12,9 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
     }
   }, {
     body: t.Object({
-      name: t.String(),
-      email: t.String(),
-      password: t.String()
+      name: t.String({ maxLength: 255 }),
+      email: t.String({ format: "email", maxLength: 255 }),
+      password: t.String({ maxLength: 255 })
     })
   })
   .post("/login", async ({ body, set }) => {
@@ -28,8 +27,8 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
     }
   }, {
     body: t.Object({
-      email: t.String(),
-      password: t.String()
+      email: t.String({ format: "email", maxLength: 255 }),
+      password: t.String({ maxLength: 255 })
     })
   })
   .derive(({ headers }) => {
